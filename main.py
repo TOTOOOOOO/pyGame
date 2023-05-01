@@ -9,13 +9,13 @@ pygame.init()
 
 screen = pygame.display.set_mode((800,600))
 
-pygame.display.set_caption("cuftalica peek")
-icon = pygame.image.load('space.png')
-background = pygame.image.load('background.png')
+pygame.display.set_caption("pyGame")
+icon = pygame.image.load('resources/space.png')
+background = pygame.image.load('resources/background.png')
 
 
 #background music
-mixer.music.load('background.wav')
+mixer.music.load('resources/background.wav')
 mixer.music.play(-1)
 
 pygame.display.set_icon(icon)
@@ -23,41 +23,24 @@ pygame.display.set_icon(icon)
 
 # score text
 score_value = 0
-font = pygame.font.Font('customFont.ttf' ,32)
+font = pygame.font.Font('freesansbold.ttf' ,32)
 textX = 10
 textY = 10
 
 #game over text
-over_font = pygame.font.Font('customFont.ttf', 64)
-over_font1 = pygame.font.Font('customFont.ttf',16)
+over_font = pygame.font.Font('freesansbold.ttf', 128)
 
-def game_over():
 
-    run = True
-    while run:
-        over_text = over_font.render("GAME OVER", True, (255,255,255))
-        over_text1 = over_font1.render("PRESS ANY KEY TO RESTART", True,(255,255,255))
-        screen.blit(over_text, (125,250))
-        screen.blit(over_text1,(220,350))
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_ESCAPE]:
-            pygame.quit()
-
-        player(playerX,playerY)
-        show_score(textX,textY)
-        pygame.display.update()
+def game_over(x,y):
+    over_text = over_font.render("GAME OVER", True, (255,255,255))
+    screen.blit(over_text, (x,y))
 
 def show_score(x,y):
     score = font.render("Score: " + str(score_value), True,(255,255,255))
     screen.blit(score,(x,y))
 
 #player
-playerImg = pygame.image.load('space.png')
+playerImg = pygame.image.load('resources/andrejica.png')
 playerX = 20
 playerY = 300
 vel = 2
@@ -68,16 +51,17 @@ enemyY = []
 enemy_xchange = []
 enemy_ychange = []
 num_of_enemies = 3
-enemy_size = 64
+enemy_size = 128
 
 igraci = []
-igraci.append('alien.png')
-igraci.append('alien.png')
-igraci.append('alien.png')
+igraci.append('resources/flatro1.png')
+igraci.append('resources/sinopsi1.png')
+igraci.append('resources/rigon1.png')
 
 
 for i in range(num_of_enemies):
     
+    print(igraci[i])
     enemyImg.append(pygame.image.load(igraci[i]))
     enemyX.append(random.randint(650,800-enemy_size))
     enemyY.append(random.randint(0,600-enemy_size))
@@ -85,7 +69,7 @@ for i in range(num_of_enemies):
     enemy_ychange.append(1.5)
     
 
-bulletImg = pygame.image.load('bullet.png')
+bulletImg = pygame.image.load('resources/bullet.png')
 bulletX = 20
 bulletY = 300
 bullet_xchange = 5
@@ -102,7 +86,7 @@ def enemy(x,y, i):
 def fire_bullet(x,y):
     global bullet_state
     bullet_state = "fire"
-    screen.blit(bulletImg,(x+64,y + 15))
+    screen.blit(bulletImg,(x+64,y + 25))
 
 
 def isCollision(enemyX, enemyY, bulletX, bulletY, i):
@@ -116,36 +100,10 @@ def isCollision(enemyX, enemyY, bulletX, bulletY, i):
     #     return True
     # return False
 
-
-def mainMenu():
-    
-    pom = True
-    while pom:
-        screen.fill("black")
-        screen.blit(background,(0,0))
-
-        tekst = font.render("PRESS SPACE TO PLAY", True, (255,255,255))
-        screen.blit(tekst,(110,250))
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-
-        keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_ESCAPE]:
-            pygame.quit()
-        if keys[pygame.K_SPACE]:
-            pom = False; 
-        
-        pygame.display.update()
-
-
-mainMenu()
-#glavna petlja
 while run:
 
     #background
-    screen.fill("black")
+    screen.fill((0,0,0))
     screen.blit(background,(0,0))
 
     for event in pygame.event.get():
@@ -154,9 +112,6 @@ while run:
     
     keys = pygame.key.get_pressed()
 
-    if keys[pygame.K_ESCAPE]:
-        pygame.quit()
-        
     if keys[pygame.K_UP]:
         playerY -= vel
         if playerY  < 0:
@@ -167,7 +122,7 @@ while run:
             playerY = 600 - 72
 
     if keys[pygame.K_SPACE] and bullet_state == "ready":
-        bullet_sound = mixer.Sound('laser.wav')
+        bullet_sound = mixer.Sound('resources/laser.wav')
         bullet_sound.play()
         bulletY = playerY
         fire_bullet(bulletX,bulletY)
@@ -178,15 +133,12 @@ while run:
 
         # game over
 
-        if enemyX[i] < 500:
+        if enemyX[i] < 100:
             for j in range(num_of_enemies):
-                enemyX[j] = -100
+                enemyX[j] = 2000
             
             game_over()
             break   
-
-
-        #kretnja protivnika
           
         enemyY[i] += enemy_ychange[i]
 
@@ -198,9 +150,6 @@ while run:
             enemy_ychange[i] = -1.5
             enemyX[i] -= enemy_xchange[i]
         
-
-        #kolizija
-
         collision = isCollision(enemyX[i],enemyY[i], bulletX, bulletY, i)
         if collision:
             
